@@ -69,8 +69,8 @@ defmodule Boater do
   defp compact(list), do: Enum.filter(list, fn(e) -> e != nil end)
 
   defp all_modules_attributes(attr_key) do
-    modules = Enum.map(:code.all_loaded, fn({mod, _}) -> mod end)
-    Enum.reduce(modules, [], fn(m, acc) ->
+    modules = lc {app, _, _} inlist :application.loaded_applications, { :ok, modules } inlist [:application.get_key(app, :modules)], do: modules
+    Enum.reduce(List.flatten(modules), [], fn(m, acc) ->
       steps = Enum.reduce(m.module_info(:attributes), [], fn({key, val}, acc) -> if key == attr_key, do: ([ val | acc]), else: acc end) |> List.flatten
       if steps == [], do: acc, else: [{m,steps}|acc]
     end) |> List.flatten
