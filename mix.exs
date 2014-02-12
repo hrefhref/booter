@@ -14,7 +14,7 @@ defmodule Boater.Mixfile do
     [
       { :ex_doc, github: "elixir-lang/ex_doc" },
       { :lager, github: "basho/lager", override: true },
-      { :exlager, ">= 0", github: "khia/exlager" },
+      { :exlager, github: "khia/exlager" },
     ]
   end
 end
