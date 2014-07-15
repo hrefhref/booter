@@ -37,7 +37,7 @@ defmodule Boater do
     unsorted_steps = unsorted_boot_steps
     case build_acyclic_graph(unsorted_steps) do
       { :ok, graph } ->
-        sorted_steps = lc step_name inlist :digraph_utils.topsort(graph) do
+        sorted_steps = for step_name <- :digraph_utils.topsort(graph) do
           { _step_name, step } = :digraph.vertex(graph, step_name)
           step
         end |> :lists.reverse
@@ -69,7 +69,7 @@ defmodule Boater do
   defp compact(list), do: Enum.filter(list, fn(e) -> e != nil end)
 
   defp all_modules_attributes(attr_key) do
-    modules = lc {app, _, _} inlist :application.loaded_applications, { :ok, modules } inlist [:application.get_key(app, :modules)], do: modules
+    modules = for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules
     Enum.reduce(List.flatten(modules), [], fn(m, acc) ->
       steps = Enum.reduce(m.module_info(:attributes), [], fn({key, val}, acc) -> if key == attr_key, do: ([ val | acc]), else: acc end) |> List.flatten
       if steps == [], do: acc, else: [{m,steps}|acc]
@@ -113,11 +113,11 @@ defmodule Boater do
   # ------ Acyclic Graph
 
   defp vertex_fun(steps) do
-    lc {step, atts} inlist steps, do: {step, { step, atts }}
+    for {step, atts} <- steps, do: {step, { step, atts }}
   end
 
   defp edge_fun(steps) do
-    lc {step, atts} inlist steps, {key, other_step} inlist atts do
+    for {step, atts} <- steps, {key, other_step} <- atts do
       case key do
         :requires -> {step, other_step}
         :enables -> {other_step, step}
@@ -129,13 +129,13 @@ defmodule Boater do
   defp build_acyclic_graph(graph) do
     g = :digraph.new([:acyclic])
     try do
-      lc {_module, atts} inlist graph, {vertex, label} inlist vertex_fun(atts) do
+      for {_module, atts} <- graph, {vertex, label} <- vertex_fun(atts) do
         case :digraph.vertex(g, vertex) do
           false -> :digraph.add_vertex(g, vertex, label)
           _ -> throw({:graph_error, {:vertex, :duplicate, vertex}})
         end
       end
-      lc {_module, atts} inlist graph, {from, to} inlist edge_fun(atts) do
+      for {_module, atts} <- graph, {from, to} <- edge_fun(atts) do
         case :digraph.add_edge(g, from, to) do
           { :error, error } -> throw({:graph_error, {:edge, error, from, to } })
           _ -> :ok
