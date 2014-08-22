@@ -5,16 +5,15 @@ defmodule Boater.Mixfile do
     [
       app: :boater,
       version: "0.0.1",
-      elixir: "~> 0.14.3",
+      elixir: "~> 0.15.1",
       deps: deps,
     ]
   end
 
   defp deps do
     [
-      { :ex_doc, github: "elixir-lang/ex_doc" },
-      { :lager, github: "basho/lager", override: true },
-      { :exlager, github: "eraserewind/exlager", branch: "elixir-10.3.3" },
-    ]
+      {:earmark, "~> 0.1", only: :dev},
+      {:ex_doc, "~> 0.5", only: :dev},
+   ]
   end
 end

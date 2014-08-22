@@ -1,5 +1,5 @@
 defmodule Boater do
-  require Lager
+  require Logger
 
   defmacro __before_compile__(_env) do
     quote do
@@ -22,7 +22,7 @@ defmodule Boater do
   @spec boot! :: :ok | no_return()
   @doc "Run all the sorted boot steps"
   def boot! do
-    Lager.debug "Starting boot"
+    Logger.info "Starting boot"
     Enum.each(boot_steps, fn(step) -> run_boot_step(step) end)
     :ok
   end
@@ -45,15 +45,15 @@ defmodule Boater do
         # TODO Check that all {M,F,A} are exported
         sorted_steps
       { :error, { :vertex, :duplicate, step_name } } ->
-        basic_boot_error({:duplicate_boot_step, step_name}, "Duplicate boot step name: ~p", [step_name])
+        basic_boot_error({:duplicate_boot_step, step_name}, "Duplicate boot step name: #{inspect(step_name)}")
       { :error, { :edge, reason, from, to } } ->
         reason_msg = case reason do
           { :bad_vertex, v } -> "Boot step not registered: #{inspect(v)}"
           { :bad_edge, l } -> "Cyclic dependency: #{inspect(l)}"
         end
         basic_boot_error(
-          {:invalid_boot_step_dependency, from, to, },
-          "Could not add step dependency of ~p on ~p: ~p", [from,to,reason_msg]
+          {:invalid_boot_step_dependency, from, to },
+          "Could not add step dependency of #{inspect(from)} on #{inspect(to)}: #{inspect(reason_msg)}"
         )
     end
   end
@@ -81,7 +81,7 @@ defmodule Boater do
       { m, f, a } ->
         try do
           if attributes[:disable] == true do
-            Lager.warning "Boot step ~p has been disabled!", [step]
+            Logger.warn "Skipping boot step #{inspect(step)}: disabled."
             true
           else
             :erlang.apply(m, f, a)
@@ -95,17 +95,14 @@ defmodule Boater do
   end
 
   defp boot_error(step, reason, stack) do
-    Lager.emergency "Boot failed!"
-    Lager.alert "Boot error: step ~p : ~p", [step, reason]
-    Lager.alert stack
+    Logger.error "Boot failed at step #{inspect(step)}: #{inspect(reason)}"
+    Logger.debug inspect(stack)
     :timer.sleep(1000)
     exit({__MODULE__, :failure_during_boot, reason})
   end
 
-  defp basic_boot_error(reason, format, args) do
-    Lager.emergency "Boot failed!"
-    Lager.alert "Boot error: ~p", [reason]
-    Lager.alert format, args
+  defp basic_boot_error(reason, message) do
+    Logger.error "Boot failed: #{inspect(reason)} - #{inspect(message)}"
     :timer.sleep(1000)
     exit({__MODULE__, :failure_during_boot, reason})
   end
@@ -144,7 +141,7 @@ defmodule Boater do
       { :ok, g }
     catch
       { :graph_error, reason } ->
-        Lager.error "graph error ~p", [reason]
+        Logger.error "graph error: #{inspect(reason)}"
         true = :digraph.delete(g)
         { :error, reason }
     end
