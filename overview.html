@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Overview</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script type="text/javascript" charset="utf-8">
+      relpath = '';
+      if (relpath != '') relpath += '/';
+    </script>
+
+    <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+  </head>
+
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+
+    <div id="content">
+      <div class="breadcrumbs">booter v0.0.1 &rarr; <a href="overview.html">Overview</a></div>
+
+      <h1>booter v0.0.1</h1>
+
+      <ul class="summary_links">
+        
+          <li><a href="#modules_summary">Modules</a></li>
+        
+        
+          <li><a href="#exceptions_summary">Exceptions</a></li>
+        
+        
+      </ul>
+
+      
+        <h2 id="modules_summary">Modules summary <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="Booter.html">Booter</a></td>
+  
+    <td class="summary_synopsis"><p>Booter allows modules to define a list of <strong>boot steps</strong> using module attributes. Each step define what to call, what
+it requires and enables. A directed acyclic graph is then created from theses steps and progressively executed</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="Booter.Graph.html">Booter.Graph</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="Booter.Step.html">Booter.Step</a></td>
+  
+    <td class="summary_synopsis"><p>A struct that holds step</p>
+</td>
+  
+</tr>
+
+        </table>
+      
+
+      
+        <h2 id="exceptions_summary">Exceptions summary <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="Booter.Error.CyclicDependency.html">Booter.Error.CyclicDependency</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="Booter.Error.DuplicateStep.html">Booter.Error.DuplicateStep</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="Booter.Error.StepError.html">Booter.Error.StepError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="Booter.Error.UnknownDependency.html">Booter.Error.UnknownDependency</a></td>
+  
+</tr>
+
+        </table>
+      
+
+      
+    </div>
+  </body>
+</html>

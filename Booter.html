@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Booter</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script type="text/javascript" charset="utf-8">
+      relpath = '';
+      if (relpath != '') relpath += '/';
+    </script>
+
+    <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+  </head>
+
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+
+    <div id="content">
+      <div class="breadcrumbs">booter v0.0.1 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Booter.html">Booter</a></div>
+
+      <h1>
+        Booter
+        
+      </h1>
+
+      <ul class="summary_links">
+        
+          <li><a href="#summary">Summary</a></li>
+        
+        
+          <li><a href="#functions_details">Functions</a></li>
+        
+        
+          <li><a href="#macros_details">Macros</a></li>
+        
+        
+        
+      </ul>
+
+      
+        <div id="moduledoc" class="docstring">
+          <p>Booter allows modules to define a list of <strong>boot steps</strong> using module attributes. Each step define what to call, what
+it requires and enables. A directed acyclic graph is then created from theses steps and progressively executed.</p>
+<p>Why? Complicated applications can be composed of multiple subsystems or groups or processes, independants or dependants of
+each others. And starting theses subsystems is not easy as <a href="http://www.erlang.org/doc/man/application.html#start-2"><code class="inline">:application.start/2</code></a> or a supervisor child spec.</p>
+<p>Inspired/adapted to Elixir by RabbitMQ’s boot process implemented in <a href="https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md" title="">rabbit.erl</a> and <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl" title="">rabbit_misc.erl</a>. For an
+in-depth explaination, read Alvaro Videla’s <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl" title="">article</a> and <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl" title="">slides</a>.</p>
+<h2>Usage</h2>
+<h3>Defining boot steps</h3>
+<p>Using <a href="#boot_step/3"><code class="inline">boot_step/3</code></a> macro (recommended):</p>
+<pre><code class="elixir">defmodule MyModule do
+  use Booter
+
+  # without name (__MODULE__ is assumed)
+  boot_step mfa: {mod, fun, args}, requires: :required_step, enables: :another_step
+
+  # with name
+  boot_step :awesome_name, mfa: {mod, fun, args}, requires: :required_step, enables: :another_step
+
+  # With name and description
+  boot_step :awesome_name, &quot;Unicorn generator&quot;, mfa: {mod,fun,args}, requires: :rainbow_server, enables: :magic
+end</code></pre>
+<p>Or without:</p>
+<pre><code class="elixir">defmodule MyModule do
+  Module.register_attribute __MODULE__, :boot_step, accumulate: true, persist: true
+
+  @boot_step %Booter.Step{name: :awesome_step, description: &quot;Awesome things&quot;,
+                          mfa: { :application, :start, [:awesome] },
+                          requires: awesome_step}
+end</code></pre>
+<h3>Start boot</h3>
+<p>Just call <code class="inline">Booter.boot!</code>. Can raise exceptions.</p>
+<p>Usually called in <code class="inline">start/2</code> of Application behaviour.</p>
+<pre><code class="elixir">defmodule MyApp do
+    use Application
+
+    def start(_) do
+      # Start your main supervisor
+      { :ok, pid } = Supervisor.start_link()
+      # Boot the rest
+      Booter.boot!
+      { :ok, pid }
+    end
+  end</code></pre>
+
+        </div>
+      
+
+      
+
+      
+        <h2 id="summary">Summary<div class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></div></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="#boot!/1">boot!(modules \\ nil)</a></td>
+  
+    <td class="summary_synopsis"><p>Boot the steps</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#boot_step/3">boot_step(name \\ nil, description \\ nil, options)</a></td>
+  
+    <td class="summary_synopsis"><p>Macro to define a boot_step</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#module_steps/1">module_steps(module)</a></td>
+  
+    <td class="summary_synopsis"><p>List steps of the given <code class="inline">module</code></p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#modules_steps/1">modules_steps(modules \\ all_loaded_modules())</a></td>
+  
+    <td class="summary_synopsis"><p>List steps of the given list of modules</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#ordered_modules_steps/1">ordered_modules_steps(modules \\ nil)</a></td>
+  
+    <td class="summary_synopsis"><p>List steps of the given <code class="inline">modules</code> and order them using <a href="#ordered_steps/1"><code class="inline">ordered_steps/1</code></a></p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#ordered_steps/1">ordered_steps(unordered_steps)</a></td>
+  
+    <td class="summary_synopsis"><p>Orders a list of boot steps</p>
+</td>
+  
+</tr>
+
+        </table>
+      
+
+      
+
+      
+        <div id="functions_details" class="details_list">
+          <h2>Functions</h2>
+          <div class="detail">
+  <div class="detail_header" id="boot!/1">
+    <span class="signature"><strong>boot!(modules \\ nil)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#boot!/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>boot!([module, ...] | nil) :: [{:ok | :skip | :no_mfa | :error, <a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, any}, ...]</li>
+      
+    </ul>
+  
+  <div class="docstring"><p>Boot the steps</p>
+</div>
+  
+</div>
+<div class="detail">
+  <div class="detail_header" id="module_steps/1">
+    <span class="signature"><strong>module_steps(module)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#module_steps/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>module_steps(module) :: [<a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, ...]</li>
+      
+    </ul>
+  
+  <div class="docstring"><p>List steps of the given <code class="inline">module</code></p>
+</div>
+  
+</div>
+<div class="detail">
+  <div class="detail_header" id="modules_steps/1">
+    <span class="signature"><strong>modules_steps(modules \\ all_loaded_modules())</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#modules_steps/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>modules_steps([module, ...] | nil) :: [<a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, ...]</li>
+      
+    </ul>
+  
+  <div class="docstring"><p>List steps of the given list of modules</p>
+</div>
+  
+</div>
+<div class="detail">
+  <div class="detail_header" id="ordered_modules_steps/1">
+    <span class="signature"><strong>ordered_modules_steps(modules \\ nil)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#ordered_modules_steps/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>ordered_modules_steps([module, ...] | nil) :: [<a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, ...]</li>
+      
+    </ul>
+  
+  <div class="docstring"><p>List steps of the given <code class="inline">modules</code> and order them using <a href="#ordered_steps/1"><code class="inline">ordered_steps/1</code></a></p>
+</div>
+  
+</div>
+<div class="detail">
+  <div class="detail_header" id="ordered_steps/1">
+    <span class="signature"><strong>ordered_steps(unordered_steps)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#ordered_steps/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>ordered_steps([<a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, ...]) :: [<a href="Booter.Step.html#t:t/0">Booter.Step.t</a>, ...]</li>
+      
+    </ul>
+  
+  <div class="docstring"><p>Orders a list of boot steps</p>
+</div>
+  
+</div>
+
+        </div>
+      
+
+      
+        <div id="macros_details" class="details_list">
+          <h2>Macros</h2>
+          <div class="detail">
+  <div class="detail_header" id="boot_step/3">
+    <span class="signature"><strong>boot_step(name \\ nil, description \\ nil, options)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(macro)</span>
+      <a href="#boot_step/3" class="detail_link" title="Link to this macro">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+  <div class="docstring"><p>Macro to define a boot_step</p>
+</div>
+  
+</div>
+
+        </div>
+      
+
+      
+    </div>
+  </body>
+</html>
