@@ -99,6 +99,7 @@ defmodule Booter do
   def boot!(modules \\ nil) do
     steps = ordered_modules_steps(modules)
     Logger.info "Booter: booting #{Enum.count(steps)} steps."
+    Logger.debug "Booter: steps: #{inspect Enum.map(steps, fn(step) -> step.name end)}"
     Enum.map(steps, &run_boot_step/1)
   end
 
