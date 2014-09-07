@@ -104,8 +104,8 @@ defmodule Booter do
 
   @doc "List steps of the given list of modules"
   @spec modules_steps([module, ...] | nil) :: [Step.t, ...]
-  def modules_steps(modules \\ all_loaded_modules) do
-    modules
+  def modules_steps(modules \\ nil) do
+    modules || all_loaded_modules
       |> Enum.reduce([], fn(module, acc) ->
             steps = module_steps(module)
           if steps == [], do: acc, else: [steps | acc]
@@ -117,7 +117,7 @@ defmodule Booter do
   @spec module_steps(module) :: [Step.t, ...]
   # FIXME: Steps may conflict. Raise an exception, return an error ?
   def module_steps(module) do
-    module.__info__(:attributes)
+    module.module_info(:attributes)
       |> Keyword.get_values(:boot_step)
       |> List.flatten
   end
@@ -159,8 +159,8 @@ defmodule Booter do
   end
 
   defp all_loaded_modules do
-    for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules
-      |> List.flatten
+    modules = for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules
+    List.flatten(modules)
   end
 
   defp safe_apply(step, {m, f, a}) do
