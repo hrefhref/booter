@@ -106,11 +106,8 @@ defmodule Booter do
   @doc "List steps of the given list of modules"
   @spec modules_steps([module, ...] | nil) :: [Step.t, ...]
   def modules_steps(modules \\ nil) do
-    modules || all_loaded_modules
-      |> Enum.reduce([], fn(module, acc) ->
-            steps = module_steps(module)
-          if steps == [], do: acc, else: [steps | acc]
-        end)
+    (modules || all_loaded_modules)
+      |> Enum.reduce([], fn(module, acc) -> [module_steps(module) | acc] end)
       |> List.flatten
   end
 
@@ -160,8 +157,7 @@ defmodule Booter do
   end
 
   defp all_loaded_modules do
-    modules = for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules
-    List.flatten(modules)
+    List.flatten(for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules)
   end
 
   defp safe_apply(step, {m, f, a}) do
