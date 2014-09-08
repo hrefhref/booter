@@ -1,4 +1,5 @@
 defmodule Booter.Graph do
+  @moduledoc false
 
   @spec build_acyclic_graph([Booter.Step.t, ...]) :: { :ok, :digraph.graph }
   def build_acyclic_graph(steps) do

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/eraserewind/booter.svg?branch=master)](https://travis-ci.org/eraserewind/booter)
 
-Complicated applications can be composed of multiple subsystems or groups or processes, independants or dependants of
+Complex applications can be composed of multiple subsystems or groups or processes, independants or dependants of
 each others. And starting theses subsystems is not easy as `:application.start/2` or a supervisor child spec.
 
 Booter allows modules to define a list of **boot steps** using Module attributes. Each step define what to call, what
