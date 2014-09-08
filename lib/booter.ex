@@ -97,10 +97,10 @@ defmodule Booter do
   @doc "Boot the steps"
   @spec boot!([module, ...] | nil) :: [{ :ok | :skip | :no_mfa | :error, Step.t, any }, ...]
   def boot!(modules \\ nil) do
-    steps = ordered_modules_steps(modules)
-    Logger.info "Booter: booting #{Enum.count(steps)} steps."
-    Logger.debug "Booter: steps: #{inspect Enum.map(steps, fn(step) -> step.name end)}"
-    Enum.map(steps, &run_boot_step/1)
+    ordered_modules_steps(modules)
+      |> log_boot_start
+      |> Enum.map(&run_boot_step/1)
+      |> log_boot_end
   end
 
   @doc "List steps of the given list of modules"
@@ -188,6 +188,27 @@ defmodule Booter do
     else
       raise Error.StepError, step: step, error: error, stacktrace: System.stacktrace
     end
+  end
+
+  defp log_boot_start(steps) do
+    Enum.each(steps, fn(step) ->
+      Logger.debug "Booter: loaded #{step} - requires #{inspect step.requires}, enables #{inspect step.enables}"
+    end)
+    Logger.info "Booter: booting #{Enum.count(steps)} steps."
+    steps
+  end
+
+  defp log_boot_end(return) do
+    ok = Enum.filter(return, fn({status, _, _}) -> status == :ok end)
+    skip = Enum.filter(return, fn({status, _, _}) -> status == :skip end)
+    no_mfa = Enum.filter(return, fn({status, _, _}) -> status == :no_mfa end)
+    error = Enum.filter(return, fn({status, _, _}) -> status == :error end)
+    Logger.info "Booter: completed ok:#{Enum.count(ok)} error:#{Enum.count(error)} skip:#{Enum.count(skip)} no_mfa:#{Enum.count(no_mfa)}"
+    return
+  end
+
+  defp log_boot_failure(step) do
+    Logger.error "Booter: aborted at step #{step}"
   end
 
 end
