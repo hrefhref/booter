@@ -9,7 +9,7 @@ Booter allows modules to define a list of **boot steps** using Module attributes
 it requires and enables. A directed acyclic graph is then created from theses steps, and called in the correct order.
 
 Inspired/adapted to Elixir by RabbitMQ's boot process implemented in [rabbit.erl][1] and [rabbit_misc.erl][2]. For an
-in-depth explaination, read Alvaro Videla's [article][3] and [slides][2].
+in-depth explaination, read Alvaro Videla's [article][3] and [slides][4].
 
 ## Usage
 
@@ -39,8 +39,7 @@ end
 Just call `Booter.boot!`. Can raise exceptions.
 
 [exdoc]: http://eraserewind.github.io/booter/
-[1]: https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md
-[2]: http://fr.slideshare.net/old_sound/rabbitmq-boot-system
-[2]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl
-[3]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl
-
+[1]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl
+[2]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl
+[3]: https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md
+[4]: http://fr.slideshare.net/old_sound/rabbitmq-boot-system
