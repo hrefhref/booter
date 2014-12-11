@@ -2,9 +2,9 @@
 <html>
   <head>
     <title>Booter</title>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-
+    <link rel="stylesheet" href="css/elixir.css" type="text/css" media="screen" charset="utf-8" />
     <script type="text/javascript" charset="utf-8">
       relpath = '';
       if (relpath != '') relpath += '/';
@@ -12,6 +12,8 @@
 
     <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
   </head>
 
   <body>
@@ -19,9 +21,8 @@
       if (window.top.frames.main) document.body.className = 'frames';
     </script>
 
-    <div id="content">
-      <div class="breadcrumbs">booter v0.0.1 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Booter.html">Booter</a></div>
-
+    <section id="content">
+      <div class="breadcrumbs">booter v0.1.0 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Booter.html">Booter</a></div>
       <h1>
         Booter
         
@@ -32,23 +33,23 @@
           <li><a href="#summary">Summary</a></li>
         
         
+        
           <li><a href="#functions_details">Functions</a></li>
         
         
           <li><a href="#macros_details">Macros</a></li>
         
         
-        
       </ul>
 
       
-        <div id="moduledoc" class="docstring">
+        <section id="moduledoc" class="docstring">
           <p>Booter allows modules to define a list of <strong>boot steps</strong> using module attributes. Each step define what to call, what
 it requires and enables. A directed acyclic graph is then created from theses steps and progressively executed.</p>
 <p>Why? Complicated applications can be composed of multiple subsystems or groups or processes, independants or dependants of
 each others. And starting theses subsystems is not easy as <a href="http://www.erlang.org/doc/man/application.html#start-2"><code class="inline">:application.start/2</code></a> or a supervisor child spec.</p>
-<p>Inspired/adapted to Elixir by RabbitMQ’s boot process implemented in <a href="https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md" title="">rabbit.erl</a> and <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl" title="">rabbit_misc.erl</a>. For an
-in-depth explaination, read Alvaro Videla’s <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl" title="">article</a> and <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl" title="">slides</a>.</p>
+<p>Inspired/adapted to Elixir by RabbitMQ’s boot process implemented in <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl" title="">rabbit.erl</a> and <a href="https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl" title="">rabbit_misc.erl</a>. For an
+in-depth explaination, read Alvaro Videla’s <a href="https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md" title="">article</a> and <a href="http://fr.slideshare.net/old_sound/rabbitmq-boot-system" title="">slides</a>.</p>
 <h2>Usage</h2>
 <h3>Defining boot steps</h3>
 <p>Using <a href="#boot_step/3"><code class="inline">boot_step/3</code></a> macro (recommended):</p>
@@ -87,13 +88,13 @@ end</code></pre>
     end
   end</code></pre>
 
-        </div>
+        </section>
       
 
       
 
       
-        <h2 id="summary">Summary<div class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></div></h2>
+        <h2 id="summary">Summary<span class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></span></h2>
         <table class="summary">
           <tr>
   <td class="summary_signature"><a href="#boot!/1">boot!(modules \\ nil)</a></td>
@@ -117,7 +118,7 @@ end</code></pre>
   
 </tr>
 <tr>
-  <td class="summary_signature"><a href="#modules_steps/1">modules_steps(modules \\ all_loaded_modules())</a></td>
+  <td class="summary_signature"><a href="#modules_steps/1">modules_steps(modules \\ nil)</a></td>
   
     <td class="summary_synopsis"><p>List steps of the given list of modules</p>
 </td>
@@ -144,9 +145,9 @@ end</code></pre>
       
 
       
-        <div id="functions_details" class="details_list">
+        <section id="functions_details" class="details_list">
           <h2>Functions</h2>
-          <div class="detail">
+          <section class="detail">
   <div class="detail_header" id="boot!/1">
     <span class="signature"><strong>boot!(modules \\ nil)</strong></span>
     <div class="detail_header_links">
@@ -163,11 +164,13 @@ end</code></pre>
       
     </ul>
   
-  <div class="docstring"><p>Boot the steps</p>
-</div>
+  <section class="docstring">
+    <p>Boot the steps</p>
+
+  </section>
   
-</div>
-<div class="detail">
+</section>
+<section class="detail">
   <div class="detail_header" id="module_steps/1">
     <span class="signature"><strong>module_steps(module)</strong></span>
     <div class="detail_header_links">
@@ -184,13 +187,15 @@ end</code></pre>
       
     </ul>
   
-  <div class="docstring"><p>List steps of the given <code class="inline">module</code></p>
-</div>
+  <section class="docstring">
+    <p>List steps of the given <code class="inline">module</code></p>
+
+  </section>
   
-</div>
-<div class="detail">
+</section>
+<section class="detail">
   <div class="detail_header" id="modules_steps/1">
-    <span class="signature"><strong>modules_steps(modules \\ all_loaded_modules())</strong></span>
+    <span class="signature"><strong>modules_steps(modules \\ nil)</strong></span>
     <div class="detail_header_links">
       <span class="detail_type">(function)</span>
       <a href="#modules_steps/1" class="detail_link" title="Link to this function">#</a>
@@ -205,11 +210,13 @@ end</code></pre>
       
     </ul>
   
-  <div class="docstring"><p>List steps of the given list of modules</p>
-</div>
+  <section class="docstring">
+    <p>List steps of the given list of modules</p>
+
+  </section>
   
-</div>
-<div class="detail">
+</section>
+<section class="detail">
   <div class="detail_header" id="ordered_modules_steps/1">
     <span class="signature"><strong>ordered_modules_steps(modules \\ nil)</strong></span>
     <div class="detail_header_links">
@@ -226,11 +233,13 @@ end</code></pre>
       
     </ul>
   
-  <div class="docstring"><p>List steps of the given <code class="inline">modules</code> and order them using <a href="#ordered_steps/1"><code class="inline">ordered_steps/1</code></a></p>
-</div>
+  <section class="docstring">
+    <p>List steps of the given <code class="inline">modules</code> and order them using <a href="#ordered_steps/1"><code class="inline">ordered_steps/1</code></a></p>
+
+  </section>
   
-</div>
-<div class="detail">
+</section>
+<section class="detail">
   <div class="detail_header" id="ordered_steps/1">
     <span class="signature"><strong>ordered_steps(unordered_steps)</strong></span>
     <div class="detail_header_links">
@@ -247,18 +256,20 @@ end</code></pre>
       
     </ul>
   
-  <div class="docstring"><p>Orders a list of boot steps</p>
-</div>
+  <section class="docstring">
+    <p>Orders a list of boot steps</p>
+
+  </section>
   
-</div>
+</section>
 
-        </div>
+        </section>
       
 
       
-        <div id="macros_details" class="details_list">
+        <section id="macros_details" class="details_list">
           <h2>Macros</h2>
-          <div class="detail">
+          <section class="detail">
   <div class="detail_header" id="boot_step/3">
     <span class="signature"><strong>boot_step(name \\ nil, description \\ nil, options)</strong></span>
     <div class="detail_header_links">
@@ -268,15 +279,17 @@ end</code></pre>
     </div>
   </div>
   
-  <div class="docstring"><p>Macro to define a boot_step</p>
-</div>
+  <section class="docstring">
+    <p>Macro to define a boot_step</p>
+
+  </section>
   
-</div>
+</section>
 
-        </div>
+        </section>
       
 
       
-    </div>
+    </section>
   </body>
 </html>

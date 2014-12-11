@@ -2,9 +2,9 @@
 <html>
   <head>
     <title>Booter.Error.CyclicDependency</title>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-
+    <link rel="stylesheet" href="css/elixir.css" type="text/css" media="screen" charset="utf-8" />
     <script type="text/javascript" charset="utf-8">
       relpath = '';
       if (relpath != '') relpath += '/';
@@ -12,6 +12,8 @@
 
     <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
   </head>
 
   <body>
@@ -19,9 +21,8 @@
       if (window.top.frames.main) document.body.className = 'frames';
     </script>
 
-    <div id="content">
-      <div class="breadcrumbs">booter v0.0.1 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Booter.html">Booter</a> &rarr; Error &rarr; <a href="Booter.Error.CyclicDependency.html">CyclicDependency</a></div>
-
+    <section id="content">
+      <div class="breadcrumbs">booter v0.1.0 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Booter.html">Booter</a> &rarr; Error &rarr; <a href="Booter.Error.CyclicDependency.html">CyclicDependency</a></div>
       <h1>
         Booter.Error.CyclicDependency
         
@@ -34,8 +35,8 @@
           <li><a href="#summary">Summary</a></li>
         
         
-          <li><a href="#functions_details">Functions</a></li>
         
+          <li><a href="#functions_details">Functions</a></li>
         
         
         
@@ -46,7 +47,7 @@
       
 
       
-        <h2 id="summary">Summary<div class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></div></h2>
+        <h2 id="summary">Summary<span class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></span></h2>
         <table class="summary">
           <tr>
   <td class="summary_signature"><a href="#exception/1">exception(args)</a></td>
@@ -69,9 +70,9 @@
       
 
       
-        <div id="functions_details" class="details_list">
+        <section id="functions_details" class="details_list">
           <h2>Functions</h2>
-          <div class="detail">
+          <section class="detail">
   <div class="detail_header" id="exception/1">
     <span class="signature"><strong>exception(args)</strong></span>
     <div class="detail_header_links">
@@ -88,11 +89,13 @@
       
     </ul>
   
-  <div class="docstring"><p>Callback implementation of <code class="inline">Exception.exception/1</code>.</p>
-</div>
+  <section class="docstring">
+    <p>Callback implementation of <code class="inline">Exception.exception/1</code>.</p>
+
+  </section>
   
-</div>
-<div class="detail">
+</section>
+<section class="detail">
   <div class="detail_header" id="message/1">
     <span class="signature"><strong>message(error)</strong></span>
     <div class="detail_header_links">
@@ -102,17 +105,19 @@
     </div>
   </div>
   
-  <div class="docstring"><p>Callback implementation of <code class="inline">Exception.message/1</code>.</p>
-</div>
+  <section class="docstring">
+    <p>Callback implementation of <code class="inline">Exception.message/1</code>.</p>
+
+  </section>
   
-</div>
+</section>
 
-        </div>
+        </section>
       
 
       
 
       
-    </div>
+    </section>
   </body>
 </html>
