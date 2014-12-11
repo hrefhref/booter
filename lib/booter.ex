@@ -7,7 +7,7 @@ defmodule Booter do
   each others. And starting theses subsystems is not easy as `:application.start/2` or a supervisor child spec.
 
   Inspired/adapted to Elixir by RabbitMQ's boot process implemented in [rabbit.erl][1] and [rabbit_misc.erl][2]. For an
-  in-depth explaination, read Alvaro Videla's [article][3] and [slides][2].
+  in-depth explaination, read Alvaro Videla's [article][3] and [slides][4].
 
   ## Usage
 
@@ -62,10 +62,10 @@ defmodule Booter do
     end
   ```
 
-  [1]: https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md
-  [2]: http://fr.slideshare.net/old_sound/rabbitmq-boot-system
-  [2]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl
-  [3]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl
+  [1]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit.erl
+  [2]: https://github.com/rabbitmq/rabbitmq-server/blob/master/src/rabbit_misc.erl
+  [3]: https://github.com/videlalvaro/rabbit-internals/blob/master/rabbit_boot_process.md
+  [4]: http://fr.slideshare.net/old_sound/rabbitmq-boot-system
   """
 
   require Logger
