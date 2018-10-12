@@ -1,9 +1,10 @@
 defmodule Booter.Graph do
   @moduledoc false
 
-  @spec build_acyclic_graph([Booter.Step.t, ...]) :: { :ok, :digraph.graph }
+  @spec build_acyclic_graph([Booter.Step.t(), ...]) :: {:ok, :digraph.graph()}
   def build_acyclic_graph(steps) do
     graph = :digraph.new([:acyclic])
+
     try do
       for step <- steps do
         case :digraph.vertex(graph, step.name) do
@@ -11,17 +12,20 @@ defmodule Booter.Graph do
           {_, vertex} -> throw({:graph_error, {:vertex, :duplicate, step, vertex}})
         end
       end
-      for step <- steps, {from, to} <- edge(step) do
+
+      for step <- steps,
+          {from, to} <- edge(step) do
         case :digraph.add_edge(graph, from, to) do
-          { :error, error } -> throw({:graph_error, {:edge, error, step, from, to } })
+          {:error, error} -> throw({:graph_error, {:edge, error, step, from, to}})
           _ -> :ok
         end
       end
-      { :ok, graph }
+
+      {:ok, graph}
     catch
-      { :graph_error, reason } ->
+      {:graph_error, reason} ->
         true = :digraph.delete(graph)
-        { :error, reason }
+        {:error, reason}
     end
   end
 
@@ -30,5 +34,4 @@ defmodule Booter.Graph do
     edges = if step.requires, do: [{step.name, step.requires} | edges], else: edges
     if step.enables, do: [{step.enables, step.name} | edges], else: edges
   end
-
 end

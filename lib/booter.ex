@@ -77,93 +77,108 @@ defmodule Booter do
     quote do
       require Booter
       import Booter, only: :macros
-      Module.register_attribute __MODULE__, :boot_step, accumulate: true, persist: true
+      Module.register_attribute(__MODULE__, :boot_step, accumulate: true, persist: true)
     end
   end
 
   @doc "Macro to define a boot_step"
-  @spec boot_step(atom | nil, String.t | nil, Keyword.t) :: no_return
+  @spec boot_step(atom | nil, String.t() | nil, Keyword.t()) :: no_return
   defmacro boot_step(name \\ nil, description \\ nil, options) do
-    options = Dict.put_new(options, :source_file, Macro.Env.location(__CALLER__))
+    options = Keyword.put_new(options, :source_file, Macro.Env.location(__CALLER__))
+
     quote do
-      step = unquote(options)
-        |> Dict.put_new(:name, unquote(name) || __MODULE__)
-        |> Dict.put_new(:description, unquote(description))
-        |> (&(struct(Booter.Step, &1))).()
+      step =
+        unquote(options)
+        |> Keyword.put_new(:name, unquote(name) || __MODULE__)
+        |> Keyword.put_new(:description, unquote(description))
+        |> (&struct(Booter.Step, &1)).()
+
       @boot_step step
     end
   end
 
   @doc "Boot the steps"
-  @spec boot!([module, ...] | nil) :: [{ :ok | :skip | :no_mfa | :error, Step.t, any }, ...]
+  @spec boot!([module, ...] | nil) :: [{:ok | :skip | :no_mfa | :error, Step.t(), any}, ...]
   def boot!(modules \\ nil) do
     ordered_modules_steps(modules)
-      |> log_boot_start
-      |> Enum.map(&run_boot_step/1)
-      |> log_boot_end
+    |> log_boot_start
+    |> Enum.map(&run_boot_step/1)
+    |> log_boot_end
   end
 
   @doc "List steps of the given list of modules"
-  @spec modules_steps([module, ...] | nil) :: [Step.t, ...]
+  @spec modules_steps([module, ...] | nil) :: [Step.t(), ...]
   def modules_steps(modules \\ nil) do
-    (modules || all_loaded_modules)
-      |> Enum.reduce([], fn(module, acc) -> [module_steps(module) | acc] end)
-      |> List.flatten
+    (modules || all_loaded_modules())
+    |> Enum.reduce([], fn module, acc -> [module_steps(module) | acc] end)
+    |> List.flatten()
   end
 
   @doc "List steps of the given `module`"
-  @spec module_steps(module) :: [Step.t, ...]
+  @spec module_steps(module) :: [Step.t(), ...]
   # FIXME: Steps may conflict. Raise an exception, return an error ?
   def module_steps(module) do
     module.module_info(:attributes)
-      |> Keyword.get_values(:boot_step)
-      |> List.flatten
+    |> Keyword.get_values(:boot_step)
+    |> List.flatten()
   end
 
   @doc "List steps of the given `modules` and order them using `ordered_steps/1`"
-  @spec ordered_modules_steps([module, ...] | nil) :: [Step.t, ...]
+  @spec ordered_modules_steps([module, ...] | nil) :: [Step.t(), ...]
   def ordered_modules_steps(modules \\ nil) do
     ordered_steps(modules_steps(modules))
   end
 
   @doc "Orders a list of boot steps"
-  @spec ordered_steps([Step.t, ...]) :: [Step.t, ...]
+  @spec ordered_steps([Step.t(), ...]) :: [Step.t(), ...]
   def ordered_steps(unordered_steps) do
     case Graph.build_acyclic_graph(unordered_steps) do
-      { :ok, graph } ->
-        ordered_steps = for step_name <- :digraph_utils.topsort(graph) do
-          { _step_name, step } = :digraph.vertex(graph, step_name)
-          step
-        end |> :lists.reverse
+      {:ok, graph} ->
+        ordered_steps =
+          for step_name <- :digraph_utils.topsort(graph) do
+            {_step_name, step} = :digraph.vertex(graph, step_name)
+            step
+          end
+          |> :lists.reverse()
+
         :digraph.delete(graph)
         ordered_steps
-      { :error, { :vertex, :duplicate, step, vertex } } ->
+
+      {:error, {:vertex, :duplicate, step, vertex}} ->
         raise Error.DuplicateStep, duplicate: step, vertex: vertex
-      { :error, { :edge, reason, step, from, to } } ->
+
+      {:error, {:edge, reason, step, from, to}} ->
         case reason do
-          { :bad_vertex, vertex } -> raise Error.UnknownDependency, step: step, from: from, to: to, vertex: vertex
-          { :bad_edge, edge } -> raise Error.CyclicDependency, step: step, from: from, to: to, edge: edge
+          {:bad_vertex, vertex} ->
+            raise Error.UnknownDependency, step: step, from: from, to: to, vertex: vertex
+
+          {:bad_edge, edge} ->
+            raise Error.CyclicDependency, step: step, from: from, to: to, edge: edge
         end
     end
   end
 
   @doc false
-  @spec run_boot_step(Step.t) :: { :ok | :skip | :no_mfa | :error, Step.t, any }
+  @spec run_boot_step(Step.t()) :: {:ok | :skip | :no_mfa | :error, Step.t(), any}
   def run_boot_step(step) do
     case step.mfa do
-      mfa={_m, _f, _a} -> safe_apply(step, mfa)
+      mfa = {_m, _f, _a} -> safe_apply(step, mfa)
       _ -> {:no_mfa, step, nil}
     end
   end
 
   defp all_loaded_modules do
-    List.flatten(for {app, _, _} <- :application.loaded_applications, { :ok, modules } <- [:application.get_key(app, :modules)], do: modules)
+    List.flatten(
+      for {app, _, _} <- :application.loaded_applications(),
+          {:ok, modules} <- [:application.get_key(app, :modules)],
+          do: modules
+    )
   end
 
   defp safe_apply(step, {m, f, a}) do
     try do
       if step.skip do
-        Logger.warn "Booter: skipping #{step}: #{inspect step.skip}"
+        Logger.warn("Booter: skipping #{step}: #{inspect(step.skip)}")
         {:skip, step, step.skip}
       else
         {:ok, step, apply(m, f, a)}
@@ -179,32 +194,42 @@ defmodule Booter do
 
   defp handle_error(step, error) do
     if step[:catch] do
-      Logger.error "Booter: catched error in #{step}: #{inspect error}"
+      Logger.error("Booter: catched error in #{step}: #{inspect(error)}")
       {:error, step, error}
     else
-      raise Error.StepError, step: step, error: error, stacktrace: System.stacktrace
+      raise Error.StepError, step: step, error: error, stacktrace: System.stacktrace()
     end
   end
 
   defp log_boot_start(steps) do
-    Enum.each(steps, fn(step) ->
-      Logger.debug "Booter: loaded #{step} - requires #{inspect step.requires}, enables #{inspect step.enables}"
+    Enum.each(steps, fn step ->
+      Logger.debug(
+        "Booter: loaded #{step} - requires #{inspect(step.requires)}, enables #{
+          inspect(step.enables)
+        }"
+      )
     end)
-    Logger.info "Booter: booting #{Enum.count(steps)} steps."
+
+    Logger.info("Booter: booting #{Enum.count(steps)} steps.")
     steps
   end
 
   defp log_boot_end(return) do
-    ok = Enum.filter(return, fn({status, _, _}) -> status == :ok end)
-    skip = Enum.filter(return, fn({status, _, _}) -> status == :skip end)
-    no_mfa = Enum.filter(return, fn({status, _, _}) -> status == :no_mfa end)
-    error = Enum.filter(return, fn({status, _, _}) -> status == :error end)
-    Logger.info "Booter: completed ok:#{Enum.count(ok)} error:#{Enum.count(error)} skip:#{Enum.count(skip)} no_mfa:#{Enum.count(no_mfa)}"
+    ok = Enum.filter(return, fn {status, _, _} -> status == :ok end)
+    skip = Enum.filter(return, fn {status, _, _} -> status == :skip end)
+    no_mfa = Enum.filter(return, fn {status, _, _} -> status == :no_mfa end)
+    error = Enum.filter(return, fn {status, _, _} -> status == :error end)
+
+    Logger.info(
+      "Booter: completed ok:#{Enum.count(ok)} error:#{Enum.count(error)} skip:#{Enum.count(skip)} no_mfa:#{
+        Enum.count(no_mfa)
+      }"
+    )
+
     return
   end
 
   defp log_boot_failure(step) do
-    Logger.error "Booter: aborted at step #{step}"
+    Logger.error("Booter: aborted at step #{step}")
   end
-
 end
