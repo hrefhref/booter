@@ -6,8 +6,8 @@ defmodule Booter.Mixfile do
      version: "0.2.0",
      elixir: "~> 1.4",
      description: "Boot an Elixir application step by step",
-     package: package,
-     deps: deps]
+     package: package(),
+     deps: deps()]
   end
 
   def application do
