@@ -16,8 +16,8 @@ defmodule Booter.Mixfile do
 
   defp deps do
     [
-      {:earmark, "~> 0.1", only: :dev},
-      {:ex_doc, "~> 0.5", only: :dev},
+      {:earmark, "~> 1.3", only: :dev},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false}
    ]
   end
 
