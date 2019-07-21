@@ -1,14 +1,8 @@
-language: erlang
-notifications:
-  recipients:
-    - jordan+travis-booter@jordan.io
+language: elixir
+elixir:
+  - '1.7.4'
 otp_release:
-  - 17.0
-before_install:
-  - git clone https://github.com/elixir-lang/elixir
-  - cd elixir
-  - git checkout v1.0
-  - make && cd ..
-before_script: "export PATH=`pwd`/elixir/bin:$PATH"
-script: "mix do local.hex --force, deps.get && mix test"
+  - '21.3.8'
 
+script: 
+  - "MIX_ENV=test mix do local.hex --force, deps.get && mix test"
