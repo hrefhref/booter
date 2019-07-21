@@ -185,19 +185,19 @@ defmodule Booter do
       end
     rescue
       error ->
-        handle_error(step, error)
+        handle_error(step, error, __STACKTRACE__)
     catch
       error ->
-        handle_error(step, error)
+        handle_error(step, error, __STACKTRACE__)
     end
   end
 
-  defp handle_error(step, error) do
+  defp handle_error(step, error, stacktrace) do
     if step[:catch] do
       Logger.error("Booter: catched error in #{step}: #{inspect(error)}")
       {:error, step, error}
     else
-      raise Error.StepError, step: step, error: error, stacktrace: System.stacktrace()
+      raise Error.StepError, step: step, error: error, stacktrace: stacktrace
     end
   end
 
@@ -227,9 +227,5 @@ defmodule Booter do
     )
 
     return
-  end
-
-  defp log_boot_failure(step) do
-    Logger.error("Booter: aborted at step #{step}")
   end
 end
