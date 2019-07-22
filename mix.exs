@@ -4,7 +4,7 @@ defmodule Booter.Mixfile do
   def project do
     [
       app: :booter,
-      version: "0.2.0",
+      version: "0.3.0",
       elixir: "~> 1.7",
       description: "Boot an Elixir application step by step",
       package: package(),
