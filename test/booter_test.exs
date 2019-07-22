@@ -5,7 +5,7 @@ defmodule BooterTest do
   alias Booter.Error
 
   defmodule BareModule do
-    Module.register_attribute __MODULE__, :boot_step, accumulate: true, persist: true
+    Module.register_attribute(__MODULE__, :boot_step, accumulate: true, persist: true)
     @boot_step %Step{name: :bare, description: "Bare Step"}
     @boot_step %Step{name: :bare_two, description: "Second Bare Step"}
   end
@@ -19,7 +19,7 @@ defmodule BooterTest do
 
   test "module_steps/1 on a bare module" do
     steps = module_steps(BareModule)
-    assert is_list steps
+    assert is_list(steps)
     assert Enum.count(steps) == 2
     bare = Enum.at(steps, 0)
     assert bare.__struct__ == Step
@@ -27,7 +27,7 @@ defmodule BooterTest do
 
   test "module_steps/1 on a module using boot_step/3 macro" do
     steps = module_steps(MacroModule)
-    assert is_list steps
+    assert is_list(steps)
     assert Enum.count(steps) == 3
 
     # boot_step/3 with (nil, nil, options)
@@ -53,7 +53,7 @@ defmodule BooterTest do
 
   test "modules_steps/1 with given list of module" do
     steps = modules_steps([BareModule, MacroModule])
-    assert is_list steps
+    assert is_list(steps)
     assert Enum.count(steps) == 5
   end
 
@@ -73,8 +73,8 @@ defmodule BooterTest do
   test "ordered_steps/1" do
     unordered_steps = modules_steps([Dependencies])
     steps = ordered_steps(unordered_steps)
-    steps_names = Enum.map(steps, fn(s) -> s.name end)
-    assert is_list steps
+    steps_names = Enum.map(steps, fn s -> s.name end)
+    assert is_list(steps)
     assert Enum.count(unordered_steps) == Enum.count(steps)
     assert steps_names == [:planet, :clouds, :sky, :earth, :rainbow, :unicorn, :moon, :poneys]
   end
@@ -123,7 +123,11 @@ defmodule BooterTest do
   test "boot!/1" do
     steps = module_steps(BootMe)
     return = boot!([BootMe])
-    assert return == [{:ok, Enum.at(steps, 0), "what is the meaning of life"}, {:ok, Enum.at(steps, 1), "42"}]
+
+    assert return == [
+             {:ok, Enum.at(steps, 0), "what is the meaning of life"},
+             {:ok, Enum.at(steps, 1), "42"}
+           ]
   end
 
   defmodule BootSkip do
@@ -144,6 +148,18 @@ defmodule BooterTest do
 
   test "boot!/1 with failing step" do
     assert_raise Error.StepError, fn -> Booter.boot!([BootRaise]) end
+  end
+
+  test "StepError includes a stacktrace" do
+    e =
+      try do
+        Booter.boot!([BootRaise])
+        nil
+      rescue
+        e in [Error.StepError] -> e
+      end
+
+    assert [{:erlang, :binary_to_integer, ["lol, nope"], []} | _] = e.stacktrace
   end
 
   defmodule BootCatch do
@@ -167,5 +183,4 @@ defmodule BooterTest do
     return = boot!([BootWithoutFun])
     assert return == [{:no_mfa, Enum.at(steps, 0), nil}]
   end
-
 end
